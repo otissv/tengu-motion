@@ -14,7 +14,7 @@ You own all state; Tengu keeps no hidden scheduler.
 Import the package and step animations each frame with your frame delta:
 
 ```odin
-import tengu "../tengu" // adjust path to your project layout
+import tengu "libs:tengu"
 
 opacity_slot: tengu.Slot(f32)
 dt := f32(frame_time_seconds)

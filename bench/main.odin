@@ -7,7 +7,7 @@ Run:
 
 package tengu_motion_bench
 
-import tengu "../"
+import tengu "libs:tengu"
 import "core:fmt"
 import "core:time"
 

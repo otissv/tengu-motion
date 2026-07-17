@@ -4368,8 +4368,17 @@ trace_hook_receives_step_events :: proc(t: ^testing.T) {
 		}
 
 		ctx: Trace_Test
+		// Ignore emissions from other parallel tests that call *_traced while this
+		// hook is installed (global debug hook is process-wide).
+		want_dt: f32 = 0.25
 		trace_fn :: proc(info: Trace_Info(f32), user_data: rawptr) {
 			ctx := cast(^Trace_Test)user_data
+			if info.kind != .STEP || info.tag != .Tween {
+				return
+			}
+			if !approx_eq_f32({a = info.dt, b = 0.25, epsilon = 1e-4}) {
+				return
+			}
 			ctx.count += 1
 			ctx.last = info
 		}
@@ -4384,7 +4393,7 @@ trace_hook_receives_step_events :: proc(t: ^testing.T) {
 		result := tween_step_traced(
 			Tween_Step_Traced_Params(f32) {
 				state = &state,
-				dt = 0.25,
+				dt = want_dt,
 				anim = F32_Animatable(),
 				completion = DEFAULT_COMPLETION_POLICY,
 			},
@@ -4393,7 +4402,7 @@ trace_hook_receives_step_events :: proc(t: ^testing.T) {
 		testing.expect_value(t, ctx.count, 1)
 		testing.expect_value(t, ctx.last.kind, Trace_Kind.STEP)
 		testing.expect_value(t, ctx.last.tag, Stepper_Tag.Tween)
-		expect_close(t, ctx.last.dt, 0.25)
+		expect_close(t, ctx.last.dt, want_dt)
 		expect_close(t, ctx.last.value, result.value)
 		testing.expect(t, ctx.last.has_target)
 		expect_close(t, ctx.last.target, 10)

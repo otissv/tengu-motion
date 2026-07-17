@@ -1,5 +1,7 @@
 package tengu_motion
 
+import "core:sync"
+
 /*
 Additive observability over finalized animators. Query procs read caller-owned state
 without changing stepping contracts or introducing hidden ownership.
@@ -154,6 +156,9 @@ trace_callback: rawptr
 @(private)
 trace_user_data: rawptr
 
+@(private)
+trace_mu: sync.Mutex
+
 debug_assert :: proc(condition: bool, message: string) {
 	when ODIN_DEBUG {
 		assert(condition, message)
@@ -162,6 +167,8 @@ debug_assert :: proc(condition: bool, message: string) {
 
 set_animation_trace_hook :: proc($T: typeid, p: Set_Animation_Trace_Hook_Params(T)) {
 	when ODIN_DEBUG {
+		sync.mutex_lock(&trace_mu)
+		defer sync.mutex_unlock(&trace_mu)
 		trace_type_id = T
 		trace_callback = rawptr(p.callback)
 		trace_user_data = p.user_data
@@ -170,6 +177,8 @@ set_animation_trace_hook :: proc($T: typeid, p: Set_Animation_Trace_Hook_Params(
 
 clear_animation_trace_hook :: proc() {
 	when ODIN_DEBUG {
+		sync.mutex_lock(&trace_mu)
+		defer sync.mutex_unlock(&trace_mu)
 		trace_type_id = nil
 		trace_callback = nil
 		trace_user_data = nil
@@ -179,6 +188,8 @@ clear_animation_trace_hook :: proc() {
 @(private)
 trace_emit :: proc(info: Trace_Info($T)) {
 	when ODIN_DEBUG {
+		sync.mutex_lock(&trace_mu)
+		defer sync.mutex_unlock(&trace_mu)
 		if trace_type_id == T && trace_callback != nil {
 			callback := cast(proc(info: Trace_Info(T), user_data: rawptr))trace_callback
 			callback(info, trace_user_data)
@@ -189,6 +200,8 @@ trace_emit :: proc(info: Trace_Info($T)) {
 @(private)
 trace_step_result :: proc(p: Trace_Step_Result_Params($T)) {
 	when ODIN_DEBUG {
+		sync.mutex_lock(&trace_mu)
+		defer sync.mutex_unlock(&trace_mu)
 		if trace_callback == nil do return
 
 		info := Trace_Info(T) {
@@ -212,7 +225,10 @@ trace_step_result :: proc(p: Trace_Step_Result_Params($T)) {
 		info.target, info.has_target = stepper_target_impl(
 			Stepper_Target_Impl_Params(T){tag = p.tag, state = p.state, anim = p.anim},
 		)
-		trace_emit(info)
+		if trace_type_id == T && trace_callback != nil {
+			callback := cast(proc(info: Trace_Info(T), user_data: rawptr))trace_callback
+			callback(info, trace_user_data)
+		}
 	}
 }
 
