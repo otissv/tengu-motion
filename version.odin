@@ -1,4 +1,4 @@
-package tengu_animation
+package tengu_motion
 
 VERSION_MAJOR :: 1
 VERSION_MINOR :: 0

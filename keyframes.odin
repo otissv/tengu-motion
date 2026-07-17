@@ -1,4 +1,4 @@
-package tengu_animation
+package tengu_motion
 
 /*
 Per-stop authoring data. In `DURATION` mode each stop's `duration` is the time in

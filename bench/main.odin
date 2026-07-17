@@ -5,7 +5,7 @@ Run:
   odin run tengu/bench -o:speed
 */
 
-package tengu_animation_bench
+package tengu_motion_bench
 
 import tengu "../"
 import "core:fmt"

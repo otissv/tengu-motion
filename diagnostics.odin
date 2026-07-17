@@ -1,4 +1,4 @@
-package tengu_animation
+package tengu_motion
 
 /*
 Additive observability over finalized animators. Query procs read caller-owned state

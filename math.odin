@@ -1,4 +1,4 @@
-package tengu_animation
+package tengu_motion
 
 import "core:math"
 

@@ -1,4 +1,4 @@
-package tengu_animation
+package tengu_motion
 
 /*
 Immediate-mode transition slots wrap finalized tween and spring primitives. Callers
