@@ -4385,7 +4385,10 @@ trace_hook_receives_step_events :: proc(t: ^testing.T) {
 
 		set_animation_trace_hook(
 			f32,
-			Set_Animation_Trace_Hook_Params(f32){callback = trace_fn, user_data = &ctx},
+			Set_Animation_Trace_Hook_Params(f32) {
+				callback = trace_fn,
+				user_data = rawptr(&ctx),
+			},
 		)
 		defer clear_animation_trace_hook()
 
