@@ -1,3 +1,4 @@
+#+test
 package tengu_motion
 
 import "core:math"

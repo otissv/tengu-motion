@@ -1,6 +1,6 @@
 package tengu_motion
 
-import "core:math"
+@(require) import "core:math"
 
 /*
 Damped spring configuration using stiffness, damping, and mass. Displacement is

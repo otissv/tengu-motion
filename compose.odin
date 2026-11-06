@@ -1,7 +1,7 @@
 package tengu_motion
 
-import "core:math"
-import "core:mem"
+@(require) import "core:math"
+@(require) import "core:mem"
 
 Stepper_Tag :: enum u8 {
 	Tween,
